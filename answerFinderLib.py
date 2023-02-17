@@ -30,7 +30,6 @@ def checkTemplate1(image):
         return [], variant, error
     # cv2.imwrite('service/templates/test.png', image)  
     image = cv2.resize(image, (795, 809))
-    
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
     cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -79,10 +78,7 @@ def cropAnswerTemp1(image):
     for c in cnts:
         area = cv2.contourArea(c)
         if area > 600 and area < 900:
-            ((x, y), r) = cv2.minEnclosingCircle(c)
-            # 59 894 | 553
-            # 59 894 | 924
-            # 59 894 | 1322  
+            ((x, y), r) = cv2.minEnclosingCircle(c) 
             if(y > 500 and y < 1350 and x > 20 and x < 950):
                 points.append([int(x), int(y), int(r), area])
                 count = count + 1
