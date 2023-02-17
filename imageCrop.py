@@ -99,7 +99,7 @@ def nothing(x):
 
 def getPaper(file):
     heightImg = 1600
-    widthImg  = 1200
+    widthImg  = 1400
     img = cv2.imread(file)
     img = cv2.resize(img, (widthImg, heightImg)) # RESIZE IMAGE
     imgBlank = np.zeros((heightImg,widthImg, 3), np.uint8) # CREATE A BLANK IMAGE FOR TESTING DEBUGING IF REQUIRED
@@ -115,6 +115,7 @@ def getPaper(file):
     imgBigContour = img.copy() # COPY IMAGE FOR DISPLAY PURPOSES
     contours, hierarchy = cv2.findContours(imgThreshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # FIND ALL CONTOURS
     cv2.drawContours(imgContours, contours, -1, (0, 255, 0), 5) # DRAW ALL DETECTED CONTOURS
+    
     # FIND THE BIGGEST COUNTOUR
     biggest, maxArea = biggestContour(contours) # FIND THE BIGGEST CONTOUR
     error = True
@@ -126,7 +127,6 @@ def getPaper(file):
         pts2 = np.float32([[0, 0],[widthImg, 0], [0, heightImg],[widthImg, heightImg]]) # PREPARE POINTS FOR WARP
         matrix = cv2.getPerspectiveTransform(pts1, pts2)
         imgWarpColored = cv2.warpPerspective(img, matrix, (widthImg, heightImg))
-        error = False
-        return imgWarpColored, error
+        return imgWarpColored, False
     else:
         return img, error
