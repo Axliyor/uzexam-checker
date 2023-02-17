@@ -1,5 +1,5 @@
 from answerFinderLib import answerFinder
-path = "service/templates/test.png"
+path = "template/test.png"
 variant, answer, error = answerFinder(path, 90)
 print('Variant:', variant)
 print('Error:', error)
