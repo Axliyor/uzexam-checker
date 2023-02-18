@@ -57,7 +57,7 @@ def stackImages(imgArray,scale,lables=[]):
     if len(lables) != 0:
         eachImgWidth= int(ver.shape[1] / cols)
         eachImgHeight = int(ver.shape[0] / rows)
-        print(eachImgHeight)
+        # print(eachImgHeight)
         for d in range(0, rows):
             for c in range (0,cols):
                 cv2.rectangle(ver,(c*eachImgWidth,eachImgHeight*d),(c*eachImgWidth+len(lables[d])*13+27,30+eachImgHeight*d),(255,255,255),cv2.FILLED)
@@ -97,16 +97,21 @@ def drawRectangle(img,biggest,thickness):
 def nothing(x):
     pass
 
-def getPaper(file):
+def getPaper(img):
     heightImg = 1600
     widthImg  = 1400
-    img = cv2.imread(file)
+    # img = cv2.imread(file)
     img = cv2.resize(img, (widthImg, heightImg)) # RESIZE IMAGE
     imgBlank = np.zeros((heightImg,widthImg, 3), np.uint8) # CREATE A BLANK IMAGE FOR TESTING DEBUGING IF REQUIRED
+    cv2.imwrite("answer/1.png", imgBlank)
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # CONVERT IMAGE TO GRAY SCALE
+    cv2.imwrite("answer/2.png", imgGray)
     imgBlur = cv2.GaussianBlur(imgGray, (5, 5), 1) # ADD GAUSSIAN BLUR
+    cv2.imwrite("answer/3.png", imgGray)
+    
     thres=200,200 # GET TRACK BAR VALUES FOR THRESHOLDS
     imgThreshold = cv2.Canny(imgBlur,thres[0],thres[1]) # APPLY CANNY BLUR
+    cv2.imwrite("answer/4.png", imgThreshold)
     kernel = np.ones((5, 5))
     imgDial = cv2.dilate(imgThreshold, kernel, iterations=2) # APPLY DILATION
     imgThreshold = cv2.erode(imgDial, kernel, iterations=1)  # APPLY EROSION
@@ -114,6 +119,7 @@ def getPaper(file):
     imgContours = img.copy() # COPY IMAGE FOR DISPLAY PURPOSES
     imgBigContour = img.copy() # COPY IMAGE FOR DISPLAY PURPOSES
     contours, hierarchy = cv2.findContours(imgThreshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # FIND ALL CONTOURS
+    
     cv2.drawContours(imgContours, contours, -1, (0, 255, 0), 5) # DRAW ALL DETECTED CONTOURS
     
     # FIND THE BIGGEST COUNTOUR
@@ -123,6 +129,9 @@ def getPaper(file):
         biggest = reorder(biggest)
         cv2.drawContours(imgBigContour, biggest, -1, (0, 255, 0), 20) # DRAW THE BIGGEST CONTOUR
         imgBigContour = drawRectangle(imgBigContour,biggest,2)
+        cv2.imwrite('answer/5.png', imgBigContour)
+        # cv2.imshow('template222', imgBigContour)
+        # cv2.waitKey()
         pts1 = np.float32(biggest) # PREPARE POINTS FOR WARP
         pts2 = np.float32([[0, 0],[widthImg, 0], [0, heightImg],[widthImg, heightImg]]) # PREPARE POINTS FOR WARP
         matrix = cv2.getPerspectiveTransform(pts1, pts2)
