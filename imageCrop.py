@@ -116,20 +116,14 @@ def nothing(x):
     pass
 
 
-def getPaper(img):
+def getPaper(img, thres):
     heightImg = 1600
     widthImg = 1400
     img = cv2.resize(img, (widthImg, heightImg))
     imgBlank = np.zeros((heightImg, widthImg, 3), np.uint8)
-    # cv2.imwrite("answer/1.png", imgBlank)
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # cv2.imwrite("answer/2.png", imgGray)
     imgBlur = cv2.GaussianBlur(imgGray, (5, 5), 1)
-    # cv2.imwrite("answer/3.png", imgGray)
-
-    thres = 200, 200
     imgThreshold = cv2.Canny(imgBlur, thres[0], thres[1])
-    # cv2.imwrite("answer/4.png", imgThreshold)
     kernel = np.ones((5, 5))
     imgDial = cv2.dilate(imgThreshold, kernel, iterations=2)
     imgThreshold = cv2.erode(imgDial, kernel, iterations=1)
@@ -146,7 +140,6 @@ def getPaper(img):
         biggest = reorder(biggest)
         cv2.drawContours(imgBigContour, biggest, -1, (0, 255, 0), 20)
         imgBigContour = drawRectangle(imgBigContour, biggest, 2)
-        # cv2.imwrite('answer/5.png', imgBigContour)
         pts1 = np.float32(biggest)
         pts2 = np.float32(
             [[0, 0], [widthImg, 0], [0, heightImg], [widthImg, heightImg]])

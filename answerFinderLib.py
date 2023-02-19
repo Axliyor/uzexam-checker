@@ -20,12 +20,8 @@ def template(image, question_count):
 def answerFinder(path, questionCount):
     try:
         image = cv2.imread(path)
-        image2, error1 = getPaper(image)
-        # cv2.imshow('1', image2)
-        image3, error1 = getPaper(image2)
-        # cv2.imshow('2', image3)
-        # cv2.waitKey()
-        # cv2.imwrite('answer/7.png', image3)
+        image2, error1 = getPaper(image, [200, 200])
+        image3, error1 = getPaper(image2, [200, 200])
         variant, answer, error2 = template(image3, questionCount)
         return variant, answer, error1 or error2
     except:
@@ -34,21 +30,17 @@ def answerFinder(path, questionCount):
 
 def checkTemplate1(image):
     image = cv2.resize(image, (1200, 1600))
-    # cv2.imwrite('answer/8.png', image)
-    image, variant, error = cropPaper(image)
-    # cv2.imwrite('answer/10.png', image)
+    image, variant, error = cropPaperTemp1(image)
     if error:
         return [], variant, error
     image = cv2.resize(image, (959, 1400))
     image, error = cropAnswerTemp1(image)
-    # cv2.imwrite('answer/11.png', image)
     if error:
         return [], variant, error
     image = cv2.resize(image, (795, 809))
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(
         gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-    # cv2.imwrite("answer/12.png", thresh)
     cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
     points = []
@@ -69,9 +61,8 @@ def checkTemplate1(image):
             points.append([int(x), int(y)])
             count = count + 1
     points.reverse()
-    # for i in range(len(points)):
-    #     cv2.circle(image, (points[i][0]-3, points[i][1]-1), 11, (22, 255, 25), 1)
-    # cv2.imwrite("template/result.png", image)
+    for i in range(len(points)):
+        cv2.circle(image, (points[i][0]-3, points[i][1]-1), 11, (22, 255, 25), 1)
     if count > 0:
         return checkAnswerTemplate1(points), variant, False
     return [], variant, True
@@ -123,12 +114,11 @@ def cropAnswerTemp1(image):
     return warped, difference > differenceFix
 
 
-def cropPaper(image):
+def cropPaperTemp1(image):
     points = []
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(
         gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-    # cv2.imwrite('answer/9.png', thresh)
     cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
     for c in cnts:
@@ -144,7 +134,7 @@ def cropPaper(image):
     variants = []
     for c in cnts:
         area = cv2.contourArea(c)
-        if (area < 1000 and area > 500):
+        if (area < 1200 and area > 500):
             ((x, y), r) = cv2.minEnclosingCircle(c)
             if (y > 150 and y < 250 and x > 500):
                 variants.append([int(x), int(y), area])

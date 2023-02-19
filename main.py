@@ -1,11 +1,13 @@
 from answerFinderLib import answerFinder
-# path = "template/template1Test.png"
-path = "template/test1.jpg"
-variant, answer, error = answerFinder(path, 90)
-print('Variant:', variant)
-print('Error:', error)
-if not error:
-    print('Answer:',answer)
-# if not error:
-#     for x in range(90):
-#         print(x+1, answer[x])
+paths = [
+    ["template/test1.jpg", 90],
+    ["template/test2.jpg", 90],
+    ["template/test3.jpg", 90]
+]
+
+for x in paths:    
+    variant, answer, error = answerFinder(x[0], x[1])
+    print('Variant:', variant)
+    print('Error:', error)
+    if not error:
+        print('Answer:',answer)
