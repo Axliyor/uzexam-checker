@@ -61,8 +61,8 @@ def checkTemplate1(image):
             points.append([int(x), int(y)])
             count = count + 1
     points.reverse()
-    for i in range(len(points)):
-        cv2.circle(image, (points[i][0]-3, points[i][1]-1), 11, (22, 255, 25), 1)
+    # for i in range(len(points)):
+    #     cv2.circle(image, (points[i][0]-3, points[i][1]-1), 11, (22, 255, 25), 1)
     if count > 0:
         return checkAnswerTemplate1(points), variant, False
     return [], variant, True
@@ -137,11 +137,11 @@ def cropPaperTemp1(image):
         if (area < 1200 and area > 500):
             ((x, y), r) = cv2.minEnclosingCircle(c)
             if (y > 150 and y < 250 and x > 500):
-                variants.append([int(x), int(y), area])
+                variants.append([int(x), int(y)])
         elif area > 1000 and area < 2000:
             ((x, y), r) = cv2.minEnclosingCircle(c)
             if ((((y > 10 and y < 100) or (y > 1450 and y < 1585)) and x > 20 and x < 1350)):
-                points.append([int(x), int(y), area])
+                points.append([int(x), int(y)])
                 count = count + 1
     points.reverse()
     maps = points[0:2]
