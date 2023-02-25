@@ -140,6 +140,18 @@ def getPaper(img, thres):
         biggest = reorder(biggest)
         cv2.drawContours(imgBigContour, biggest, -1, (0, 255, 0), 20)
         imgBigContour = drawRectangle(imgBigContour, biggest, 2)
+        # print(biggest)
+        biggest[0][0][0] = biggest[0][0][0]+5
+        biggest[0][0][1] = biggest[0][0][1]+5
+        
+        biggest[1][0][0] = biggest[1][0][0]-5
+        biggest[1][0][1] = biggest[1][0][1]+5
+        
+        biggest[2][0][0] = biggest[2][0][0]+5
+        biggest[2][0][1] = biggest[2][0][1]-5
+        
+        biggest[3][0][0] = biggest[3][0][0]-5
+        biggest[3][0][1] = biggest[3][0][1]-5
         pts1 = np.float32(biggest)
         pts2 = np.float32(
             [[0, 0], [widthImg, 0], [0, heightImg], [widthImg, heightImg]])

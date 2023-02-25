@@ -1,39 +1,58 @@
 import cv2
 import numpy as np
+from qrCode import get_data_in_qr
 from imageCrop import getPaper
 from imageCrop import four_point_transform
 from math import sqrt
 from math import fabs
 from positions import sheet1_line_data
+from printAnswerLib import printAnswer1
 fix = 10
 differenceFix = 20
 
 
-def template(image, question_count):
-    if question_count == 90:
-        answer, variant, error = checkTemplate1(image)
-        return variant, answer, error
-    else:
-        return variant, [], False
-
-
-def answerFinder(path, questionCount):
+def checkQR(path):
     try:
         image = cv2.imread(path)
         image2, error1 = getPaper(image, [200, 200])
         image3, error1 = getPaper(image2, [200, 200])
-        variant, answer, error2 = template(image3, questionCount)
-        return variant, answer, error1 or error2
+        qrcode = get_data_in_qr(image3)
+        return image3, qrcode[1], int(qrcode[2]), False
     except:
-        return 0, [], True
+        return 0, "0", 0, True
+
+
+def template(image, question_count, correctAnswer):
+    if question_count == 90:
+        img, answer, variant, error = checkTemplate1(image)
+        if not error:
+            resultPath = printAnswer1(img, answer, correctAnswer)
+            return resultPath, variant, answer, error
+        else:
+            return "", variant, [], True
+    else:
+        return "", variant, [], True
+
+
+def answerFinder(image3, questionCount, correctAnswer):
+    try:
+        resultPath, variant, answer, error = template(
+            image3, questionCount, correctAnswer)
+        return resultPath, variant, answer, error
+    except:
+        return "", 0, [], True
 
 
 def checkTemplate1(image):
+
     image = cv2.resize(image, (1200, 1600))
     image, variant, error = cropPaperTemp1(image)
+
     if error:
         return [], variant, error
+
     image = cv2.resize(image, (959, 1400))
+    img = image
     image, error = cropAnswerTemp1(image)
     if error:
         return [], variant, error
@@ -61,11 +80,10 @@ def checkTemplate1(image):
             points.append([int(x), int(y)])
             count = count + 1
     points.reverse()
+    variant = 0
     # for i in range(len(points)):
     #     cv2.circle(image, (points[i][0]-3, points[i][1]-1), 11, (22, 255, 25), 1)
-    if count > 0:
-        return checkAnswerTemplate1(points), variant, False
-    return [], variant, True
+    return img, checkAnswerTemplate1(points), variant, False
 
 
 def cropAnswerTemp1(image):
@@ -116,6 +134,7 @@ def cropAnswerTemp1(image):
 
 def cropPaperTemp1(image):
     points = []
+
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(
         gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
@@ -127,6 +146,7 @@ def cropPaperTemp1(image):
             cv2.drawContours(thresh, [c], 0, 0, -1)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
     opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=3)
+
     cnts = cv2.findContours(opening, cv2.RETR_EXTERNAL,
                             cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
@@ -159,24 +179,27 @@ def cropPaperTemp1(image):
     length2 = sqrt((points[point2][0] - points[point4][0])
                    ** 2+(points[point2][1] - points[point4][1])**2)
     difference = fabs(length1-length2)
-    variantCount = 0
-    variantPath = [0, 0]
-    for x in variants:
-        if x[1] > 150 and x[1] < 250 and x[0] > 500:
-            variantPath[0] = x[0]
-            variantPath[1] = x[1]
-            variantCount += 1
     variant = 0
-    if variantCount > 1:
-        variant = 0
-    else:
-        for index in range(4):
-            if (variantPath[0] > sheet1_line_data[3][index] - 80 and variantPath[0] < sheet1_line_data[3][index] + 80):
-                variant = index + 1
-                break
+
+    # variantCount = 0
+    # variantPath = [0, 0]
+    # for x in variants:
+    #     if x[1] > 150 and x[1] < 250 and x[0] > 500:
+    #         variantPath[0] = x[0]
+    #         variantPath[1] = x[1]
+    #         variantCount += 1
+    #
+    # if variantCount > 1:
+    #     variant = 0
+    # else:
+    #     for index in range(4):
+    #         if (variantPath[0] > sheet1_line_data[3][index] - 80 and variantPath[0] < sheet1_line_data[3][index] + 80):
+    #             variant = index + 1
+    #             break
     pts = np.array([(points[point1][0], points[point1][1]), (points[point2][0], points[point2][1]),
                    (points[point3][0], points[point3][1]), (points[point4][0], points[point4][1])], dtype="float32")
     warped = four_point_transform(image, pts)
+
     return warped, variant, difference > differenceFix
 
 
