@@ -11,14 +11,14 @@ def generateTest():
 
 
 def checkTest():
-    path = "test/test1.png"
+    path = "test/test2.png"
     # path = "template/test1.jpg"
     image, bookId, questionCount, error = checkQR(path)
     print(bookId)
     if error:
         print("QR code error!")
     else:
-        correctAnswer = ['D'] * questionCount
+        correctAnswer = ['A'] * questionCount
         resultPath, variant, answer, error = answerFinder(
             image, questionCount, correctAnswer)
         print(resultPath)
@@ -26,7 +26,6 @@ def checkTest():
         print('Error:', error)
         if not error:
             print('Answer:', answer)
-
 
 # generateTest()
 checkTest()
