@@ -10,39 +10,17 @@ from printAnswerLib import printAnswer1
 fix = 10
 differenceFix = 20
 
-def check(path):
-    img = cv2.imread(path)
-    for retry in range(3):
-        image, bookId, questionCount, error = checkQR(img, retry)
-        print(bookId)
-        if error:
-            print("QR code error!")
-        else:
-            correctAnswer = ['A'] * questionCount
-            resultPath, variant, answer, error = answerFinder(image, questionCount, correctAnswer)
-            print(resultPath)
-            print('Variant:', variant)
-            print('Error:', error)
-            if not error:
-                print('Answer:', answer)
-                break
 
-def checkQR(img, retry):
+def checkQR(path):
     try:
-        if(retry == 0):
-            image, error = getPaper(img, [200, 200])
-        elif(retry == 1):
-            image1, error = getPaper(img, [200, 200])
-            image, error = getPaper(image1, [200, 200])
-        elif(retry == 2):
-            image1, error = getPaper(img, [200, 200])
-            image2, error = getPaper(image1, [200, 200])
-            image, error = getPaper(image2, [200, 200])
-        qrcode = get_data_in_qr(image)
+        image = cv2.imread(path)
+        image2, error1 = getPaper(image, [200, 200])
+        image3, error1 = getPaper(image2, [200, 200])
+        qrcode = get_data_in_qr(image3) 
         # https://t.me/uzexam_bot/2938/90
-        return image, qrcode[4], int(qrcode[5]), False, 0
+        return image3, qrcode[4], int(qrcode[5]), False
     except:
-        return 0, "0", 0, True, 1
+        return 0, "0", 0, True
 
 
 def template(image, question_count, correctAnswer):

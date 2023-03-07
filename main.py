@@ -1,5 +1,6 @@
 import cv2
 from answerFinderLib import answerFinder
+from answerFinderLib import check
 from answerFinderLib import checkQR
 from sheetGenerator import sheetGenerator1
 
@@ -11,21 +12,12 @@ def generateTest():
 
 
 def checkTest():
-    path = "test/test2.png"
+    path = "test/pressed.jpg"
     # path = "template/test1.jpg"
-    image, bookId, questionCount, error = checkQR(path)
-    print(bookId)
-    if error:
-        print("QR code error!")
-    else:
-        correctAnswer = ['A'] * questionCount
-        resultPath, variant, answer, error = answerFinder(
-            image, questionCount, correctAnswer)
-        print(resultPath)
-        print('Variant:', variant)
-        print('Error:', error)
-        if not error:
-            print('Answer:', answer)
+    check(path)
 
 # generateTest()
-checkTest()
+# checkTest()
+# bookId = "34354sdfsdf"
+# text = "https://t.me/uzexam_bot/" + bookId + "/90"
+# print(text.split('/')[4],text.split('/')[5])
