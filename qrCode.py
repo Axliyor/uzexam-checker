@@ -8,7 +8,7 @@ def get_data_in_qr(image):
     image = image[0:300, 0:400]
     barcodes = pyzbar.decode(image)
     barcodeData = barcodes[0].data.decode("utf-8")
-    return barcodeData.split(" ")
+    return barcodeData.split("/")
 
 
 def getQR(bookId):

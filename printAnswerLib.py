@@ -13,31 +13,31 @@ def printAnswer1(image, answer, correct):
         if len(answer[x]) == 1:
             if correct[x] in answer[x]:
                 blokCorrectCount1 += 1
-                result.append(True)
+                result.append(1)
             else:
-                result.append(False)
+                result.append(0)
         else:
-            result.append(False)
+            result.append(2)
     blokCorrectCount2 = 0
     for x in range(30, 60):
         if len(answer[x]) == 1:
             if correct[x] in answer[x]:
                 blokCorrectCount2 += 1
-                result.append(True)
+                result.append(1)
             else:
-                result.append(False)
+                result.append(0)
         else:
-            result.append(False)
+            result.append(2)
     blokCorrectCount3 = 0
     for x in range(60, 90):
         if len(answer[x]) == 1:
             if correct[x] in answer[x]:
                 blokCorrectCount3 += 1
-                result.append(True)
+                result.append(1)
             else:
-                result.append(False)
+                result.append(0)
         else:
-            result.append(False)
+            result.append(2)
     return printImageAnswer1(image, result, blokCorrectCount1, blokCorrectCount2, blokCorrectCount3)
 
 
@@ -46,16 +46,23 @@ def printImageAnswer1(image, result, blokCorrectCount1, blokCorrectCount2, blokC
     src = cv2.imread('template/success.png')
     small_ok_image = cv2.resize(src, (25, 25))
     height_ok, width_ok, channels = small_ok_image.shape
+
+    src = cv2.imread('template/notFound.png')
+    small_no_image = cv2.resize(src, (25, 25))
+    height_no, width_no, channels = small_ok_image.shape
+
     src = cv2.imread('template/error.png')
     small_error_image = cv2.resize(src, (25, 25))
     height_error, width_error, channels = small_error_image.shape
     for index in range(90):
         offset = np.array(
             (sheet1_line_data[4][index][1]-12, sheet1_line_data[4][index][0]+120))
-        if result[index]:
+        if result[index] == 1:
             image[offset[0]:offset[0] + height_ok, offset[1]:offset[1] + width_ok] = small_ok_image
-        else:
+        elif result[index] == 0:
             image[offset[0]:offset[0] + height_error, offset[1]:offset[1] + width_error] = small_error_image
+        else:
+            image[offset[0]:offset[0] + height_no, offset[1]:offset[1] + width_no] = small_no_image
     font = cv2.FONT_HERSHEY_SIMPLEX
     fontScale = 0.55
     org = (800, 20)

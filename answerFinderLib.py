@@ -10,31 +10,39 @@ from printAnswerLib import printAnswer1
 fix = 10
 differenceFix = 20
 
+
 def check(path):
     img = cv2.imread(path)
+    # retry listni ajratish uchun tasvir ichiki tekshiruvi soni
     for retry in range(3):
-        image, bookId, questionCount, error = checkQR(img, retry)
-        print(bookId)
+        image, bookId, questionCount, error, status = checkQR(img, retry)
         if error:
-            print("QR code error!")
+            if (retry == 2):
+                return bookId, questionCount, 0, [], "", 100
         else:
             correctAnswer = ['A'] * questionCount
-            resultPath, variant, answer, error = answerFinder(image, questionCount, correctAnswer)
-            print(resultPath)
-            print('Variant:', variant)
-            print('Error:', error)
+            resultPath, variant, answer, error, status = answerFinder(
+                image, questionCount, correctAnswer)
+            if status == 101 and retry == 2:
+                return bookId, questionCount, 0, [], "", 101
             if not error:
-                print('Answer:', answer)
-                break
+                # print('Answer:', answer)
+                return bookId, questionCount, variant, answer, resultPath, 200
+            elif retry == 2:
+                # print("error")
+                return bookId, questionCount, 0, [], "", 102
+
 
 def checkQR(img, retry):
     try:
-        if(retry == 0):
+        image = img
+        error = False
+        if (retry == 0):
             image, error = getPaper(img, [200, 200])
-        elif(retry == 1):
+        elif (retry == 1):
             image1, error = getPaper(img, [200, 200])
             image, error = getPaper(image1, [200, 200])
-        elif(retry == 2):
+        elif (retry == 2):
             image1, error = getPaper(img, [200, 200])
             image2, error = getPaper(image1, [200, 200])
             image, error = getPaper(image2, [200, 200])
@@ -42,7 +50,7 @@ def checkQR(img, retry):
         # https://t.me/uzexam_bot/2938/90
         return image, qrcode[4], int(qrcode[5]), False, 0
     except:
-        return 0, "0", 0, True, 1
+        return 0, "0", 0, True, 100
 
 
 def template(image, question_count, correctAnswer):
@@ -61,9 +69,9 @@ def answerFinder(image3, questionCount, correctAnswer):
     try:
         resultPath, variant, answer, error = template(
             image3, questionCount, correctAnswer)
-        return resultPath, variant, answer, error
+        return resultPath, variant, answer, error, 0
     except:
-        return "", 0, [], True
+        return "", 0, [], True, 101
 
 
 def checkTemplate1(image):
