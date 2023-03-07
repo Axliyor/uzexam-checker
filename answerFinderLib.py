@@ -26,10 +26,8 @@ def check(path):
             if status == 101 and retry == 2:
                 return bookId, questionCount, 0, [], "", 101
             if not error:
-                # print('Answer:', answer)
                 return bookId, questionCount, variant, answer, resultPath, 200
             elif retry == 2:
-                # print("error")
                 return bookId, questionCount, 0, [], "", 102
 
 

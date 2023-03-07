@@ -36,8 +36,7 @@ def generateTest():
 
 def checkTest():
     # path = "test/test1.png"
-    # path = "test/shaxzod.jpg"
-    path = "test/test6_err_101.png"
+    path = "test/shaxzod.jpg"
     bookId, questionCount, variant, answer, resultPath, status = check(path)
     print(bookId, questionCount, variant, answer, resultPath, status)
 
