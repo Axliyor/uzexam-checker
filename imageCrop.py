@@ -116,7 +116,7 @@ def nothing(x):
     pass
 
 
-def getPaper(img, thres):
+def getPaper(img, thres, whitespace):
     heightImg = 1600
     widthImg = 1400
     img = cv2.resize(img, (widthImg, heightImg))
@@ -124,7 +124,8 @@ def getPaper(img, thres):
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     imgBlur = cv2.GaussianBlur(imgGray, (5, 5), 1)
     imgThreshold = cv2.Canny(imgBlur, thres[0], thres[1])
-    kernel = np.ones((5, 5))
+    
+    kernel = np.ones((whitespace, whitespace))
     imgDial = cv2.dilate(imgThreshold, kernel, iterations=2)
     imgThreshold = cv2.erode(imgDial, kernel, iterations=1)
     imgContours = img.copy()

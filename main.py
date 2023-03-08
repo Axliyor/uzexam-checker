@@ -35,10 +35,36 @@ def generateTest():
 
 
 def checkTest():
-    # path = "test/test1.png"
-    path = "test/shaxzod.jpg"
-    bookId, questionCount, variant, answer, resultPath, status = check(path)
-    print(bookId, questionCount, variant, answer, resultPath, status)
+    paths = [
+        "test/test1.png",
+        "test/test2.png",
+        "test/test3.png",
+        "test/shaxzod.jpg",
+        "test/jamshidbek1.jpg",
+        # "test/jamshidbek2.jpg",
+        "test/jamshidbek3.jpg",
+        "test/jamshidbek4.jpg",
+        "test/jamshidbek5.jpg",
+        "test/jamshidbek6.jpg",
+        "test/jamshidbek7.jpg",
+        "test/jamshidbek8.jpg",
+        "test/jamshidbek9.jpg",
+        "test/jamshidbek10.jpg",
+        "test/azizbek1.jpg",
+        "test/azizbek2.jpg",
+        "test/azizbek3.jpg",
+        "test/azizbek4.jpg",
+        "test/azizbek5.jpg",
+        "test/azizbek6.jpg",
+        # "test/azizbek7.jpg"
+    ]
+    for x in paths:
+        bookId, questionCount, variant, answer, resultPath, status = check(x)
+        if status == 200:
+            print(x, "->OK")
+            # print(bookId, questionCount, variant, answer, resultPath, status)
+        else:
+            print(x, "-> ERROR")
 
 
 # generateTest()

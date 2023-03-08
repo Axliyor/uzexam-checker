@@ -14,36 +14,43 @@ differenceFix = 20
 def check(path):
     img = cv2.imread(path)
     # retry listni ajratish uchun tasvir ichiki tekshiruvi soni
-    for retry in range(3):
-        image, bookId, questionCount, error, status = checkQR(img, retry)
-        if error:
-            if (retry == 2):
-                return bookId, questionCount, 0, [], "", 100
-        else:
-            correctAnswer = ['A'] * questionCount
-            resultPath, variant, answer, error, status = answerFinder(
-                image, questionCount, correctAnswer)
-            if status == 101 and retry == 2:
-                return bookId, questionCount, 0, [], "", 101
-            if not error:
-                return bookId, questionCount, variant, answer, resultPath, 200
-            elif retry == 2:
-                return bookId, questionCount, 0, [], "", 102
+    for whitespace in range(1, 6):
+        for retry in range(4):
+            image, bookId, questionCount, error, status = checkQR(img, retry, whitespace)
+            if error:
+                if (retry == 3 and whitespace == 5):
+                    return bookId, questionCount, 0, [], "", 100
+            else:
+                correctAnswer = ['A'] * questionCount
+                resultPath, variant, answer, error, status = answerFinder(
+                    image, questionCount, correctAnswer)
+                if status == 101 and retry == 3 and whitespace == 5:
+                    return bookId, questionCount, 0, [], "", 101
+                if not error:
+                    return bookId, questionCount, variant, answer, resultPath, 200
+                elif retry == 3 and whitespace == 5:
+                    return bookId, questionCount, 0, [], "", 102
 
 
-def checkQR(img, retry):
+def checkQR(img, retry, whitespace):
     try:
         image = img
         error = False
+        thresh = 200
         if (retry == 0):
-            image, error = getPaper(img, [200, 200])
+            image, error = getPaper(img, [thresh, thresh], whitespace)
         elif (retry == 1):
-            image1, error = getPaper(img, [200, 200])
-            image, error = getPaper(image1, [200, 200])
+            image1, error = getPaper(img, [thresh, thresh], whitespace)
+            image, error = getPaper(image1, [thresh, thresh], whitespace)
         elif (retry == 2):
-            image1, error = getPaper(img, [200, 200])
-            image2, error = getPaper(image1, [200, 200])
-            image, error = getPaper(image2, [200, 200])
+            image1, error = getPaper(img, [thresh, thresh], whitespace)
+            image2, error = getPaper(image1, [thresh, thresh], whitespace)
+            image, error = getPaper(image2, [thresh, thresh], whitespace)
+        elif (retry == 3):
+            image1, error = getPaper(img, [thresh, thresh], whitespace)
+            image2, error = getPaper(image1, [thresh, thresh], whitespace)
+            image3, error = getPaper(image2, [thresh, thresh], whitespace)
+            image, error = getPaper(image3, [thresh, thresh], whitespace)
         qrcode = get_data_in_qr(image)
         # https://t.me/uzexam_bot/2938/90
         return image, qrcode[4], int(qrcode[5]), False, 0
