@@ -11,26 +11,6 @@ fix = 10
 differenceFix = 20
 
 
-def check(path):
-    img = cv2.imread(path)
-    # retry listni ajratish uchun tasvir ichiki tekshiruvi soni
-    for whitespace in range(1, 6):
-        for retry in range(4):
-            image, bookId, questionCount, error, status = checkQR(img, retry, whitespace)
-            if error:
-                if (retry == 3 and whitespace == 5):
-                    return bookId, questionCount, 0, [], "", 100
-            else:
-                correctAnswer = ['A'] * questionCount
-                resultPath, variant, answer, error, status = answerFinder(
-                    image, questionCount, correctAnswer)
-                if status == 101 and retry == 3 and whitespace == 5:
-                    return bookId, questionCount, 0, [], "", 101
-                if not error:
-                    return bookId, questionCount, variant, answer, resultPath, 200
-                elif retry == 3 and whitespace == 5:
-                    return bookId, questionCount, 0, [], "", 102
-
 
 def checkQR(img, retry, whitespace):
     try:
